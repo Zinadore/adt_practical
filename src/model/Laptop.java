@@ -9,25 +9,69 @@ package model;
  *
  * @author arxidios
  */
-public class Laptop implements IComputer {
+public class Laptop implements INetworkDevice {
     
     private String hostName;
     private String ip;
-
-    public Laptop(String hostName, String ip) {
-        this.hostName = hostName;
-        this.ip = ip;
+    private User user;
+    
+    public Laptop(String hostname, String ip) {
+    	setHostname(hostname);
+    	setIp(ip);
     }
     
-    public String getHostName() {
-        return hostName;
-    }
-
-    public String getIp() {
-        return ip;
-    }
-
-    public void setIp(String ip) {
-    	this.ip = ip;
-    }
+	@Override
+	public String getHostname() {
+		return this.hostName;
+	}
+	@Override
+	public void setHostname(String hostname) {
+		this.hostName = hostname;
+	}
+	@Override
+	public String getIp() {
+		return this.ip;
+	}
+	@Override
+	public void setIp(String newIp) {
+		this.ip = newIp;
+	}
+	@Override
+	public String getUserName() {
+		if(user != null) {
+			return user.getUsername();
+		}
+		return null;
+	}
+	@Override
+	public void changeUser(User user) {
+		this.user = user;
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (!(obj instanceof Laptop))
+			return false;
+		Laptop other = (Laptop) obj;
+		if (hostName == null) {
+			if (other.hostName != null)
+				return false;
+		} else if (!hostName.equals(other.hostName))
+			return false;
+		if (ip == null) {
+			if (other.ip != null)
+				return false;
+		} else if (!ip.equals(other.ip))
+			return false;
+		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return "Laptop [hostName=" + hostName + ", ip=" + ip + ", user=" + user.getUsername() + "]";
+	}
 }
