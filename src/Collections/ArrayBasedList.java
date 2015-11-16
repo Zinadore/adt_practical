@@ -1,5 +1,6 @@
 package Collections;
 
+import java.util.Comparator;
 import java.util.function.Predicate;
 
 // ********************************************************
@@ -57,6 +58,21 @@ public class ArrayBasedList<T> implements ListInterface<T>
 		numItems++;
 	}
 
+
+	public void add(T newDataItem, Comparator<T> comperator) throws ListException {
+		if(isEmpty()) {
+			add(1, newDataItem);
+			return;
+		}
+		for (int i = 1; i <= size(); i++) {
+			if(comperator.compare(newDataItem, get(i)) < 0) {
+				add(i, newDataItem);
+				return;
+			}
+		}
+		add((numItems + 1),newDataItem);
+	}
+	
 	public void remove( int index ) 
 					   throws ListIndexOutOfBoundsException
 	{
@@ -158,4 +174,5 @@ public class ArrayBasedList<T> implements ListInterface<T>
 		}
 		throw new ListException("No matching object found");
 	}
+
 }

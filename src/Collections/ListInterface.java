@@ -1,6 +1,7 @@
 package Collections;
 
 import java.io.Serializable;
+import java.util.Comparator;
 import java.util.function.Predicate;
 
 // ********************************************************
@@ -17,6 +18,7 @@ public interface ListInterface<T> extends Serializable
 	public void add(int index, T newDataItem) 
 					throws ListIndexOutOfBoundsException,
 						   ListException;
+	public void add(T newDataItem, Comparator<T> comperator);
 	public void append(T newDataItem);
 	public T showFront();
 	public T showLast();

@@ -1,5 +1,6 @@
 package Collections;
 
+import java.util.Comparator;
 import java.util.function.Predicate;
 
 @SuppressWarnings("unchecked")
@@ -93,6 +94,36 @@ public class ReferenceBasedList<T> implements ListInterface<T>
 		}
 	}
 
+	public void add(T newDataItem, Comparator<T> comperator) {
+		ListNode<T> item = new ListNode<T>(newDataItem, null);
+		if(isEmpty()) {
+			head = tail = item;
+			numItems++;
+			return;
+		}
+		if (comperator.compare(newDataItem, head.getItem()) < 0) {
+			item.setNext(head);
+			head = item;
+			numItems++;
+		} else if (comperator.compare(newDataItem, tail.getItem()) > 0) {
+			tail.setNext(item);
+			tail = item;
+			numItems++;
+		} else {
+			ListNode<T> tmp = head;
+			for(int i = 0; i < (size() - 1); i++) {
+				ListNode<T> next = tmp.getNext();
+				if (comperator.compare(newDataItem, next.getItem()) < 0) {
+					item.setNext(next);
+					tmp.setNext(item);
+					numItems++;
+					return;
+				}
+				tmp = next;
+			}
+		}
+	}
+	
 	public void insert(T newDataItem)
 	{
 		this.add(1,newDataItem);
@@ -159,8 +190,9 @@ public class ReferenceBasedList<T> implements ListInterface<T>
 	@Override
 	public T findSingle(Predicate<T> predicate) throws ListException {
 		for (ListNode<T> tmp=head; tmp!=null; tmp=tmp.getNext()) {
-			if (predicate.test(tmp.getItem())) {
-				return tmp.getItem();
+			T item = tmp.getItem();
+			if (predicate.test(item)) {
+				return item;
 			}
 		}
 		throw new ListException("Error on find single, no matching element found");

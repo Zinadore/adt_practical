@@ -11,7 +11,33 @@ import java.io.Serializable;
  *
  * @author arxidios
  */
-public class User implements Serializable{
+public class User implements Serializable, Comparable<User>{
+
+	private String username;
+    private String password;
+    
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+    
+    public String getUsername() {
+        return username;
+    }
+    
+    public boolean checkPassword(String password) {
+        return password.equals(this.password);
+    }
+
+	@Override
+	public int compareTo(User other) {
+		return this.username.compareToIgnoreCase(other.getUsername());
+	}
+	
+	@Override
+	public String toString() {
+		return "[User: username = "+ username +"]";
+	}
     
     @Override
 	public int hashCode() {
@@ -38,19 +64,4 @@ public class User implements Serializable{
 		return true;
 	}
 
-	private String username;
-    private String password;
-    
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-    
-    public String getUsername() {
-        return username;
-    }
-    
-    public boolean checkPassword(String password) {
-        return password.equals(this.password);
-    }
 }
