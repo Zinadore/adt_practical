@@ -68,6 +68,7 @@ public class DialogPing extends Stage implements Initializable {
         toggleGroup = new ToggleGroup();
         toggleGroup.getToggles().add(HOSTNAME);
         toggleGroup.getToggles().add(IP);
+        textField.requestFocus();
     }
     
     public void okPressed() {

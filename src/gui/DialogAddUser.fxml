@@ -41,11 +41,7 @@
                   <Insets bottom="10.0" />
                </VBox.margin>
             </Label>
-            <TextField fx:id="passwordField" maxWidth="-Infinity" onKeyReleased="#checkPassword" prefHeight="26.0" prefWidth="192.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1">
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </TextField>
+            <PasswordField fx:id="passwordField" maxWidth="-Infinity" onKeyReleased="#checkPassword" prefWidth="192.0" VBox.vgrow="NEVER" />
             <HBox alignment="CENTER">
                <children>
                   <Label fx:id="errorLabel" text="Error!" textFill="RED" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="2">

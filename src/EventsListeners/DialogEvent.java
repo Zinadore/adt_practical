@@ -6,6 +6,7 @@
 package EventsListeners;
 
 import java.util.EventObject;
+import model.PingType;
 
 /**
  *
@@ -17,7 +18,7 @@ public class DialogEvent extends EventObject {
     private String password;
     private String hostname;
     private String hostOrId;
-    private Enum identifier;
+    private PingType identifier;
     
     //Constructor for Connect User
     public DialogEvent(Object source, String username, String password, 
@@ -43,7 +44,7 @@ public class DialogEvent extends EventObject {
 
     //Constructor for Ping
     public DialogEvent(Object source, String username, String hostOrId, 
-            Enum identifier) {
+            PingType identifier) {
         super(source);
         this.username = username;
         this.hostOrId = hostOrId;
@@ -66,7 +67,7 @@ public class DialogEvent extends EventObject {
         return hostOrId;
     }
     
-    public Enum getIdentifier() {
+    public PingType getIdentifier() {
         return identifier;
     }
     

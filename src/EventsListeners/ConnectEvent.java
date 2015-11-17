@@ -38,6 +38,7 @@ public class ConnectEvent extends Event {
         this.hostname = hostname;
     }
     
+    //Constructor for User Disconnect
     public ConnectEvent(EventType<? extends Event> eventType, String username, 
             String hostname) {
         super(USER_DISCONNECT);

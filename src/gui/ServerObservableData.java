@@ -5,7 +5,7 @@
  */
 package gui;
 
-import Collections.ArrayBasedList;
+import Collections.ListInterface;
 import utility.BooleanHolder;
 import model.INetworkDevice;
 
@@ -16,9 +16,9 @@ import model.INetworkDevice;
 public class ServerObservableData implements IObservableData{
     
     private BooleanHolder serverIsOn;
-    private ArrayBasedList<INetworkDevice> list;
+    private ListInterface<INetworkDevice> list;
     
-    public ServerObservableData(BooleanHolder b, ArrayBasedList<INetworkDevice> l) {
+    public ServerObservableData(BooleanHolder b, ListInterface<INetworkDevice> l) {
         serverIsOn = b;
         list = l;
     }
@@ -27,7 +27,7 @@ public class ServerObservableData implements IObservableData{
         return serverIsOn;
     }
 
-    public ArrayBasedList<INetworkDevice> getList() {
+    public ListInterface<INetworkDevice> getList() {
         return list;
     }
     

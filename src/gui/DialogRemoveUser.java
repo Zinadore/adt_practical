@@ -5,7 +5,7 @@
  */
 package gui;
 
-import Collections.ArrayBasedList;
+import Collections.ListInterface;
 import EventsListeners.DialogEvent;
 import EventsListeners.DialogListener;
 import java.io.IOException;
@@ -48,7 +48,7 @@ public class DialogRemoveUser extends Stage implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }    
     
-    public DialogRemoveUser(ArrayBasedList<INetworkDevice> data) {
+    public DialogRemoveUser(ListInterface<INetworkDevice> data) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DialogRemoveUser.fxml"));
         fxmlLoader.setController(this);
         
@@ -62,7 +62,7 @@ public class DialogRemoveUser extends Stage implements Initializable {
             e.printStackTrace();
         }
         
-        for (int i = 1; i < data.size(); i++) {
+        for (int i = 1; i <= data.size(); i++) {
             observable.add(data.get(i).getUserName());
         }
         listview.getItems().setAll(observable);

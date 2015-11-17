@@ -17,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
@@ -28,7 +29,7 @@ import javafx.stage.Stage;
 public class DialogConnectUser extends Stage implements Initializable {
 
     @FXML private TextField usernameField;
-    @FXML private TextField passwordField;
+    @FXML private PasswordField passwordField;
     @FXML private TextField hostnameField;
     @FXML private Button okBtn;
     @FXML private Button cancelBtn;
@@ -59,12 +60,13 @@ public class DialogConnectUser extends Stage implements Initializable {
         }
         
         errorLabel.setVisible(false);
+        usernameField.requestFocus();
     }
     
     public void okPressed() {
-        if (usernameField.getText().length() > 4 
-                && passwordField.getText().length() > 4
-                && hostnameField.getText().length() > 4) {
+        if (usernameField.getText().length() > 0 
+                && passwordField.getText().length() > 0
+                && hostnameField.getText().length() > 0) {
             
             DialogEvent event = new DialogEvent(this, usernameField.getText(), 
                     passwordField.getText(), hostnameField.getText());
@@ -72,7 +74,7 @@ public class DialogConnectUser extends Stage implements Initializable {
             close();
         }
         else {
-            showError("Fields should be more than 4 characters long.");
+            showError("Fields should not be empty.");
         }
     }
     

@@ -5,14 +5,29 @@
  */
 package gui;
 
-import utility.BooleanHolder;
-import EventsListeners.ConnectEvent;
+import Collections.ListException;
 import EventsListeners.AddRemoveEvent;
+import EventsListeners.ConnectEvent;
 import EventsListeners.PingEvent;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
-import javafx.event.Event;
+import static javafx.application.Application.launch;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import model.IIdentityProvider;
+import model.ISerializer;
+import model.IServer;
+import model.IdentityException;
+import model.IdentityProvider;
+import model.PingType;
+import model.Serializer;
+import model.Server;
+import model.ServerException;
+import model.User;
+
+
 
 /**
  *
@@ -22,58 +37,111 @@ public class Main extends Application {
     
     private IObservableData data;
     private GUIController c;
-    private BooleanHolder serverIsOn = new BooleanHolder(false);
     
     @Override
     public void start(Stage primaryStage) {  
         
-//        1) create a new ServerObservableData(BooleanHolder b, INetworkDeviceList l) object
-//        2) pass it as a parameter in the GUIController.getInstance() method
-//        3) Set resizable to false to avoid user stupidity
-//        4) handle each of the different events bellow
-        
-        //data = new ServerObservableData(serverIsOn, );
+        ISerializer<User> serializer = new Serializer<User>();
+        IIdentityProvider identityProvider = new IdentityProvider(serializer);
+        IServer server = new Server(identityProvider);
+             
+        data = new ServerObservableData(server.getState(), server.getConnectedDevices());
         c = GUIController.getInstance(data);
         c.setResizable(false);
         
-        //Save user data here before exiting
         c.setOnCloseRequest( (WindowEvent w) -> {
-            System.out.println("Save Data and exit");
+            try {
+                server.stopServer();
+            } catch (IOException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
         });
         
         
         c.addEventHandler(ConnectEvent.SERVER_STATE, (ConnectEvent e ) -> {
-            //use e.getServerState to update the server variable
+            
+            if (e.getServerState()) {
+                try {
+                    server.startServer();
+                    data = new ServerObservableData(server.getState(), server.getConnectedDevices());
+                    c.updateObservableData(data);
+                } catch (IOException ex) {
+                    c.displayMessage("Error! Save file not found.");
+                } catch (ClassNotFoundException ex) {
+                    c.displayMessage("Error in deserializing.");
+                }
+                c.displayMessage("Server has started.");
+            } else {
+                try {
+                    server.stopServer();
+                    c.displayMessage("Server has stopped.");
+                } catch (IOException ex) {
+                    c.displayMessage("Error! Could not save users!");
+                }
+            }
         });
         
         c.addEventHandler(ConnectEvent.USER_CONNECT, (ConnectEvent e ) -> {
-            //Use e.getUsername, e.getPassword, e.getHostname to connect a user
-            //update gui at the end
-            c.update(); 
+            
+            try {
+                server.connectUser(e.getUsername(), e.getPassword(), e.getHostname());
+                c.update();
+                c.displayMessage("User " + e.getUsername() + " has logged in.");
+            } catch (IdentityException ex) {
+                c.displayMessage(ex.getMessage());
+            } catch (ServerException ex) {
+                c.displayMessage("Error! " + ex.getMessage());
+            }
         });
         
         c.addEventHandler(ConnectEvent.USER_DISCONNECT, (ConnectEvent e) -> {
-            //use e.getUsername to disconnect user.
-            //update gui at the end
-            c.update();
+            
+            try {
+                server.disconnectUser(e.getUsername(), e.getHostname());
+                c.update();
+                c.displayMessage("Disconnected user " + e.getUsername());
+                
+            } catch (RuntimeException ex) {
+                c.displayMessage(ex.getMessage());
+            }
+            
         });
         
         c.addEventHandler(AddRemoveEvent.ADD_USER, (AddRemoveEvent e ) -> {
-            //use e.getUsername, e.getPassword to add a new user
-            //update gui at the end
-            c.update();
+            
+            try {
+                server.addUser(e.getUsername(), e.getPassword());
+                c.update();
+                c.displayMessage("User " + e.getUsername() + " has been created.");
+                
+            } catch (IdentityException ex) {
+                c.displayMessage("Error! " + ex.getMessage());
+            }
         });
         
-        c.addEventHandler(AddRemoveEvent.REMOVE_USER, (AddRemoveEvent e ) -> {
-            //use e.getUsername to delete a user.
-            //update gui at the end
-            c.update();
+        c.addEventHandler(AddRemoveEvent.REMOVE_USER, e -> {
+            
+            try {
+                server.removeUser(e.getUsername());
+                c.update();
+                c.displayMessage("Removed user " + e.getUsername());
+                
+            } catch (IdentityException ex) {
+                c.displayMessage("Error! No Users detected.");
+            }
         });
         
-        c.addEventHandler(PingEvent.PING, (PingEvent e) -> {
-            //user e.getUsername to print the user that issued the ping,
-            // and e.getHostOrId and e.getIdentifier for the ping() method
+        c.addEventHandler(PingEvent.PING, e -> {
+            
+            if ( server.ping(e.getHostOrId(), e.getIdentifier()) ) {
+                c.displayMessage("PING Successful! \n(performed by " + e.getUsername() + 
+                        " on " + e.getHostOrId() + ").");
+            } else {
+                c.displayMessage("PING Failed. \n(performed by " + e.getUsername() + 
+                        " on " + e.getHostOrId() + ").");
+            }
         });
+
         
     }
 

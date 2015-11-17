@@ -5,7 +5,7 @@
  */
 package gui;
 
-import Collections.ArrayBasedList;
+import Collections.ListInterface;
 import EventsListeners.DialogListener;
 import java.io.IOException;
 import java.net.URL;
@@ -47,7 +47,7 @@ public class DialogShowComputers extends Stage implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }    
     
-    public DialogShowComputers(ArrayBasedList<INetworkDevice> list) {
+    public DialogShowComputers(ListInterface<INetworkDevice> list) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass()
                 .getResource("DialogShowComputers.fxml"));
         fxmlLoader.setController(this);
@@ -62,7 +62,7 @@ public class DialogShowComputers extends Stage implements Initializable {
             e.printStackTrace();
         }
         
-        for (int i = 1; i < list.size(); i++) {
+        for (int i = 1; i <= list.size(); i++) {
             observableList.add(list.get(i));
         }
         

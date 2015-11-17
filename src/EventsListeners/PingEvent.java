@@ -7,6 +7,7 @@ package EventsListeners;
 
 import javafx.event.Event;
 import javafx.event.EventType;
+import model.PingType;
 
 /**
  *
@@ -18,10 +19,10 @@ public class PingEvent extends Event {
     
     private String username;
     private String hostOrId;
-    private Enum identifier;
+    private PingType identifier;
     
     public PingEvent(EventType<? extends Event> eventType, String username, 
-            String hostOrId, Enum identifier) {
+            String hostOrId, PingType identifier) {
         super(PING);
         this.username = username;
         this.hostOrId = hostOrId;
@@ -36,7 +37,7 @@ public class PingEvent extends Event {
         return hostOrId;
     }
 
-    public Enum getIdentifier() {
+    public PingType getIdentifier() {
         return identifier;
     }
 }

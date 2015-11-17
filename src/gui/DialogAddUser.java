@@ -17,6 +17,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
@@ -30,7 +31,7 @@ import utility.PasswordChecker;
 public class DialogAddUser extends Stage implements Initializable {
 
     @FXML private TextField usernameField;
-    @FXML private TextField passwordField;
+    @FXML private PasswordField passwordField;
     @FXML private Button okBtn;
     @FXML private Button cancelBtn;
     @FXML private Label errorLabel;
@@ -60,11 +61,12 @@ public class DialogAddUser extends Stage implements Initializable {
         }
         
         errorLabel.setVisible(false);
+        usernameField.requestFocus();
     }
     
     public void okPressed() {
-        if (usernameField.getText().length() > 0 
-                && passwordField.getText().length() > 0) {
+        if (usernameField.getText().length() > 1 
+                && passwordField.getText().length() > 1) {
             
             DialogEvent event = new DialogEvent(this, usernameField.getText(), 
                     passwordField.getText());
@@ -72,7 +74,7 @@ public class DialogAddUser extends Stage implements Initializable {
             close();
         }
         else {
-            showError("Fields can not be empty.");
+            showError("Fields can not be less than one character.");
             errorLabel.setTextFill(Color.RED);
         }
     }

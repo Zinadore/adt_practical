@@ -103,6 +103,14 @@ public class GUIController extends Stage {
         dataDisplayManager.add(screenName, observableData);
     }
     
+    public void updateObservableData(IObservableData data) {
+        dataDisplayManager.add(new File(loader.getLocation().toString()).getName(), data);
+        currentController.setObservableData(
+                    dataDisplayManager.getObservableData(new File(loader.getLocation().toString()).getName()));
+        currentController.setData();
+        System.out.println(new File(loader.getLocation().toString()).getName());
+    }
+    
     public void displayMessage(String message) {
         currentController.displayMessage(message);
     }

@@ -18,10 +18,10 @@ public class PredicateTests {
 		
 	//	Person test = people.findSingle(p -> p.getName().equals("tera"));
 	//	System.out.println(test);
-	//	people.removeSingle(p -> p.getName().equals("Mitsos"));
-	//	for(int i = 1; i <= people.size(); i++){
-	//		System.out.println(people.get(i));
-	//	}
-		System.out.println(people.exists(p -> p.getAge() == 7));
+		people.removeSingle(p -> p.getName().equals("Maria"));
+		for(int i = 1; i <= people.size(); i++){
+			System.out.println(people.get(i));
+		}
+	//	System.out.println(people.exists(p -> p.getAge() == 7));
 	}
 }

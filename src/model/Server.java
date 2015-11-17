@@ -22,9 +22,9 @@ public class Server implements IServer
 	private ListInterface<INetworkDevice> connectedDevices; //Change it to ListInterface<NetworkDevice> when ready.
 	private StackInterface ipAdresses; //May change it to a queue in the future.
 
-	Server(IIdentityProvider idp)
+	public Server(IIdentityProvider idp)
 	{
-		state.set(false);
+		state = new BooleanHolder(false);
 		authenticatedUsers = new ArrayBasedList<User>(); 
 		connectedDevices = new ArrayBasedList<INetworkDevice>(); 
 		ipAdresses = new StackReferenceBased();
@@ -127,7 +127,8 @@ public class Server implements IServer
 	public void disconnectUser(String username, String hostname) throws ListException
 	{
 		authenticatedUsers.removeSingle(u -> u.getUsername().equals(username));
-		ipAdresses.push(connectedDevices.findSingle(l -> l.getHostname().equals(hostname)).getIp());
+		INetworkDevice dev = connectedDevices.findSingle(l -> l.getHostname().equals(hostname));
+		ipAdresses.push(dev.getIp());
 		connectedDevices.removeSingle(l -> l.getHostname().equals(hostname));
 	}
 

@@ -6,6 +6,8 @@
 package gui;
 
 import Collections.ArrayBasedList;
+import Collections.ListIndexOutOfBoundsException;
+import Collections.ListInterface;
 import utility.BooleanHolder;
 import EventsListeners.DialogEvent;
 import EventsListeners.ConnectEvent;
@@ -44,7 +46,7 @@ public class NewDesignController extends ControllerAbstract implements
     private CustomUserNode node;
     
     private ServerObservableData data;
-    private ArrayBasedList<INetworkDevice> observableList;
+    private ListInterface<INetworkDevice> deviceList;
     private BooleanHolder serverIsOn;
     
     /**
@@ -63,15 +65,18 @@ public class NewDesignController extends ControllerAbstract implements
     @Override
     public void setData() throws UnsupportedOperationException {
         data = (ServerObservableData) observableData;
-        observableList = data.getList();
+        deviceList = data.getList();
         serverIsOn = data.getServerIsOn();
         update();
     }
     
     public void update() {
+        data = (ServerObservableData) observableData;
+        deviceList = data.getList();
+        serverIsOn = data.getServerIsOn();
         userLayout.getChildren().clear();
-        for (int i = 1; i < observableList.size(); i++) {
-            node = new CustomUserNode(observableList.get(i));
+        for (int i = 1; i <= deviceList.size(); i++) {
+            node = new CustomUserNode(deviceList.get(i));
             node.addUserNodeListener(this);
             userLayout.getChildren().add(node);
         }
@@ -122,7 +127,7 @@ public class NewDesignController extends ControllerAbstract implements
     
     public void disconnectUser(UserNodeEvent e) {
         
-        ConnectEvent newEvent = new ConnectEvent(ConnectEvent.USER_CONNECT, 
+        ConnectEvent newEvent = new ConnectEvent(ConnectEvent.USER_DISCONNECT, 
                     (String) e.getSource(), e.getHostname());
         Event.fireEvent(userLayout, newEvent);
     }
@@ -142,7 +147,7 @@ public class NewDesignController extends ControllerAbstract implements
     
     public void removeUser() {
         
-        DialogRemoveUser dialog = new DialogRemoveUser(observableList);
+        DialogRemoveUser dialog = new DialogRemoveUser(deviceList);
         dialog.addDialogListener((DialogEvent e) -> {
             AddRemoveEvent newEvent = new AddRemoveEvent(AddRemoveEvent.REMOVE_USER, 
                     e.getUsername());
@@ -167,7 +172,7 @@ public class NewDesignController extends ControllerAbstract implements
     
     public void showConnectedComputers() {
         
-        DialogShowComputers dialog = new DialogShowComputers(observableList);
+        DialogShowComputers dialog = new DialogShowComputers(deviceList);
         dialog.showAndWait();
     }
     

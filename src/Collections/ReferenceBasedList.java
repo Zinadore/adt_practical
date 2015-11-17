@@ -213,17 +213,16 @@ public class ReferenceBasedList<T> implements ListInterface<T>
 		} else {
 			ListNode<T> temp = head;
 			for(int i = 1; i <= size() ; i++) {
-				if(predicate.test(temp.getNext().getItem())) {
-					ListNode<T> curr = temp.getNext();
-					temp.setNext(curr.getNext());
-					numItems--;
+				ListNode<T> next = temp.getNext();
+				if(predicate.test(next.getItem())) {
+					temp.setNext(next.getNext());
 					if(temp.getNext() == null) {
 						tail = temp;
 					}
-					break;
-				} else {
-					temp = temp.getNext();
+					numItems--;
+					return;
 				}
+				temp = next;
 			}
 			throw new ListException("No matching element found.");
 		}
