@@ -1,45 +1,55 @@
 package model;
 
+import java.io.IOException;
+import java.util.Random;
+
+import Collections.ArrayBasedList;
+import Collections.ListException;
 import Collections.ListInterface;
-import Collections.ReferenceBasedList;
 import Collections.StackInterface;
 import Collections.StackReferenceBased;
-import java.util.Random;
-import java.io.IOException;
-import java.util.Scanner;//delete after testing is over.
+import utility.BooleanHolder;
 
 
-public class Server 
+public class Server implements IServer
 					
 {
-	public enum pingType { IP, HOSTNAME }; 
+        
 	private int maxSize = 5; //Change to select the amount of users the network will support.
-	private boolean state; //Server: On or Off. Change it to BooleanHolder when ready.
+	private BooleanHolder state; //Server: On or Off. Change it to BooleanHolder when ready.
 	private IIdentityProvider idp;
 	private ListInterface<User> authenticatedUsers; 
-	private ListInterface<INetworkDevice> connectedLaptops; //Change it to ListInterface<NetworkDevice> when ready.
+	private ListInterface<INetworkDevice> connectedDevices; //Change it to ListInterface<NetworkDevice> when ready.
 	private StackInterface ipAdresses; //May change it to a queue in the future.
 
 	Server(IIdentityProvider idp)
 	{
-		state = false;
-		authenticatedUsers = new ReferenceBasedList<User>(); //May change it to ArrayBasedList.
-		connectedLaptops = new ReferenceBasedList<INetworkDevice>(); //May change it to ArrayBasedList.
+		state.set(false);
+		authenticatedUsers = new ArrayBasedList<User>(); 
+		connectedDevices = new ArrayBasedList<INetworkDevice>(); 
 		ipAdresses = new StackReferenceBased();
 		fillIps(ipAdresses); 
 		this.idp = idp;
 	}
 
-	public void startServer() //Starts the server.
+	public void startServer() throws IOException, ClassNotFoundException //Starts the server.
 	{
-		state = true;
+		state.set(true);
+		idp.loadUsers();
+		authenticatedUsers = new ArrayBasedList<User>(); 
+		connectedDevices = new ArrayBasedList<INetworkDevice>(); 
+		ipAdresses = new StackReferenceBased();
+		fillIps(ipAdresses);
 	}
 	
 
 	public void stopServer() throws IOException //Stops the server.
 	{
 		idp.saveUsers();
-		state = false;
+		authenticatedUsers = null;
+		connectedDevices = null;
+		ipAdresses = null;
+		state.set(false);
 	}
 
 	public void addUser(String username, String password) throws IdentityException
@@ -49,6 +59,11 @@ public class Server
 
 	public void removeUser(String username) throws IdentityException
 	{
+		if (isAlreadyAuthenticated(username))
+		{
+			authenticatedUsers.removeSingle(u -> u.getUsername().equals(username));
+			connectedDevices.removeSingle(l -> l.getUserName().equals(username));
+		}
 		idp.remove(username);
 	}
 
@@ -59,87 +74,66 @@ public class Server
 
 	private boolean hostnameExists(String hostname)
 	{
-		return connectedLaptops.exists(l -> l.getHostname().equals(hostname));
+		return connectedDevices.exists(l -> l.getHostname().equals(hostname));
 	}
 
 	private boolean ipExists(String ip)
 	{
-		return connectedLaptops.exists(l -> l.getIp().equals(ip));
+		return connectedDevices.exists(l -> l.getIp().equals(ip));
 	}
 
-	public void connectUser(String username, String password, String hostname) throws IdentityException
+	public void connectUser(String username, String password, String hostname) throws IdentityException, ServerException
 	{
-		if (authenticatedUsers.size() < maxSize) //polla ifs. mporw na ta kanw me OR kai an nai pws tha xeiristw ta exceptions?
+		if(authenticatedUsers.size() >= maxSize) {
+			throw new ServerException("There are already" + maxSize + " users connected");
+		}
+		if(isAlreadyAuthenticated(username)) {
+			throw new ServerException("User is already connected");
+		}
+		if (!hostnameExists(hostname))
 		{
-			if (!isAlreadyAuthenticated(username))
-			{
-				if (!hostnameExists(hostname))
-				{
-					connectedLaptops.append(new Laptop(hostname, giveIp()));
-					authenticatedUsers.append(idp.authenticate(username, password));
-				}
-				else
-				{
-					authenticatedUsers.append(idp.authenticate(username,password));
-				}
-	
-			}
-			else
-			{
-				//throw new ServerException -- you are not allowed to log in...
-			}
+			INetworkDevice dev = new Laptop(hostname, giveIp());
+			User user = idp.authenticate(username, password);
+			dev.changeUser(user);
+			connectedDevices.append(dev);
+			authenticatedUsers.append(user);
 		}
 		else
 		{
-			//throw new Exception -- Network is full...
+			throw new ServerException("This hostname is already connected");
 		}
+		
 	}
 
 
-	public boolean ping(String pingInfo, int pingType)
+	public boolean ping(String pingInfo, PingType pingType)
 	{
 		switch (pingType)
 		{
-			case 0:
+			case IP:
 				return ipExists(pingInfo);
-			case 1:
+			case HOSTNAME:
 				return hostnameExists(pingInfo);
 			default: //can i not use default on switch?
-				return false;
+                                return false;
 		}
 	}
 
-	public boolean isStarted()
+	public BooleanHolder getState()
 	{
 		return state;
 	}
 
-	public void disconnectUser(String username, String hostname) //throws ListException??
+	public void disconnectUser(String username, String hostname) throws ListException
 	{
 		authenticatedUsers.removeSingle(u -> u.getUsername().equals(username));
-		ipAdresses.push(connectedLaptops.findSingle(l -> l.getHostname().equals(hostname)).getIp());
-		connectedLaptops.removeSingle(l -> l.getHostname().equals(hostname));
-	}
-	
-	public String getUsers() //Returns a formatted string with all the connected users
-	{
-		String str = "";
-		for (int i=0; i < authenticatedUsers.size(); i++)
-		{
-				str += "\n" + authenticatedUsers.get(i).getUsername();
-		}
-		return str;
+		ipAdresses.push(connectedDevices.findSingle(l -> l.getHostname().equals(hostname)).getIp());
+		connectedDevices.removeSingle(l -> l.getHostname().equals(hostname));
 	}
 
-	public String getComputers() //Returns a formatted string with all the connected laptops/computers/network devices and their respective IP. need to change the name?
+	public ListInterface<INetworkDevice> getConnectedDevices() 
 	{
-		String str = "";
-		for (int i=0; i < connectedLaptops.size(); i++)
-		{
-				str += "\n" + connectedLaptops.get(i).getHostname();
-				str += " - " + connectedLaptops.get(i).getIp();
-		}
-		return str;
+		return this.connectedDevices;
 	}
 
 	private String giveIp()
@@ -153,7 +147,7 @@ public class Server
 		Random rand = new Random();
 		int value;
 		String randIp;
-
+		
 		for (int i=0; i<maxSize; i++)
 		{
 			value = rand.nextInt(100)+100;
@@ -163,82 +157,10 @@ public class Server
 		this.ipAdresses = ipAdresses;
 	}
 	
-	public String passwordStrength(String str)
-	{
-		int size = str.length();
-		int passwordStrength = 0;
-		String passwordResult;
-		boolean hasSixOrMore,hasDigit,hasLowerCase,hasUpperCase,hasSymbol;
-		hasSixOrMore = hasDigit = hasLowerCase = hasUpperCase = hasSymbol = false;
-		char ch;
-	
-		int i = 0;
-	    while(i < size)
-	    {
-			ch = str.charAt(i);
-			
-			if(Character.isDigit(ch) && hasDigit == false)
-			{
-				hasDigit = true;
-				passwordStrength++;
-			}
-			else if(Character.isLowerCase(ch) && hasLowerCase == false)
-			{
-				hasLowerCase = true;
-				passwordStrength++;
-			}
-			else if(Character.isUpperCase(ch) && hasUpperCase == false)
-			{
-				hasUpperCase = true;
-				passwordStrength++;
-			}
-			else
-			{
-				if(!Character.isLetter(ch) && hasSymbol == false)
-				{
-					hasSymbol = true;
-					passwordStrength++;
-				}
-					
-			}
-			i++;
-	    }
-			
-    	if(size >= 8)
-		{
-			hasSixOrMore = true;
-			passwordStrength++;
-		}
-    	
-		switch (passwordStrength)
-		{
-			case 1:
-				passwordResult = "Password Strength: 1 (Very Weak)";
-				break;
-			case 2:
-				passwordResult = "Password Strength: 2 (Weak)";
-				break;
-			case 3:
-				passwordResult = "Password Strength: 3 (Sufficient)";
-				break;
-			case 4:
-				passwordResult = "Password Strength: 4 (Strong)" ;
-				break;
-			case 5:
-				passwordResult = "Password Strength: 5 (Exceptional)";
-				break;
-			default: 
-				passwordResult = "Error in password strength calculation!";
-				break;
-		}
-    	
-    	return passwordResult; 
-	}
-
 	public String toString()
 	{
 		String str = "\nServer: ";
-		if (isStarted())
+		if (state.get())
 		{
 			str += "On ";
 		}
@@ -246,25 +168,8 @@ public class Server
 		{
 			str += "Off ";
 		}
-
-		str += "\nUsers Connected: " + authenticatedUsers.size();
-		str += getUsers();
-		str += "\nLaptops Connected: " + connectedLaptops.size();
-		str += getComputers();
 		str += "\nAvailable slots left: " + Integer.toString(maxSize - authenticatedUsers.size()); 
 		
 		return str;
-	}
-
-	public static void main(String[] args) //Testing
-	{
-		Server s = new Server(new IdentityProvider(new Serializer<User>()));
-		s.startServer();
-	   Scanner scan = new Scanner(System.in);
-	   System.out.println("Enter your password: ");
-	   String str = scan.nextLine();
-
-		System.out.println(s.toString());
-		System.out.println("\nPassword Strength " + s.passwordStrength(str));
 	}
 }

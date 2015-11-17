@@ -225,6 +225,7 @@ public class ReferenceBasedList<T> implements ListInterface<T>
 					temp = temp.getNext();
 				}
 			}
+			throw new ListException("No matching element found.");
 		}
 	}
 

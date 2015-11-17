@@ -1,0 +1,33 @@
+.vboxx {
+    -fx-spacing: 10;
+    -fx-alignment: CENTER;
+}
+
+.hboxx {
+    -fx-padding: 0 0 40 0;
+    -fx-alignment: CENTER;
+}
+
+.customUserNode {
+    -fx-padding: 0 40 40 40;
+}
+
+.customUserNode .button{
+    -fx-background-color: #46b19b;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+
+.customUserNode .label {
+    -fx-text-fill: black;
+    -fx-font-size: 22;
+}
+
+.customUserNode:hover {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+}
+
+#log {
+    -fx-font-size: 15; 
+}

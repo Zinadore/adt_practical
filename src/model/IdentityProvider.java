@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.function.Predicate;
 
 import Collections.ListInterface;
+import Collections.ReferenceBasedList;
 
 public class IdentityProvider implements IIdentityProvider {
 	private ListInterface<User> users;
@@ -53,6 +54,9 @@ public class IdentityProvider implements IIdentityProvider {
 	@Override
 	public void loadUsers() throws IOException, ClassNotFoundException {
 		users = serializer.deserialize(new File("users.dat"));
+		if(users == null) {
+			users = new ReferenceBasedList<User>();
+		}
 	}
 
 }
