@@ -16,6 +16,7 @@ public interface IServer
 	public void connectUser(String username, String password, String hostname) throws IdentityException, ServerException;
 	public boolean ping(String pingInfo, PingType pingType);
 	public BooleanHolder getState();
+	public ListInterface<User> getAllUsers();
 	public void disconnectUser(String username, String hostname) throws ListException; 
 	public ListInterface<INetworkDevice> getConnectedDevices();
 }

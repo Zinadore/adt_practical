@@ -45,7 +45,12 @@ public class IdentityProvider implements IIdentityProvider {
 	public User getUser(Predicate<User> predicate) throws IdentityException {
 		return users.findSingle(predicate);
 	}
-
+	
+	@Override
+	public ListInterface<User> getAllUsers() {
+		return this.users;
+	}
+	
 	@Override
 	public void saveUsers() throws IOException {
 		serializer.serialize(users, new File("users.dat"));

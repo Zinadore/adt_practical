@@ -170,6 +170,7 @@ public class ArrayBasedList<T> implements ListInterface<T>
 		for(int i = 1; i <= this.size(); i++) {
 			if(predicate.test(this.get(i))){
 				this.remove(i);
+				return;
 			}
 		}
 		throw new ListException("No matching object found");

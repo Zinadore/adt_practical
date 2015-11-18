@@ -55,7 +55,11 @@ public class IdentityProviderMock implements IIdentityProvider {
 	public User getUser(Predicate<User> predicate) throws IdentityException {
 		return users.findSingle(predicate);
 	}
-
+	
+	public ListInterface<User> getAllUsers() {
+		return this.users;
+	}
+	
 	@Override
 	public void saveUsers() throws IOException {
 		// TODO Auto-generated method stub

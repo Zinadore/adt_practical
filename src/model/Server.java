@@ -123,7 +123,11 @@ public class Server implements IServer
 	{
 		return state;
 	}
-
+	
+	public ListInterface<User> getAllUsers() {
+		return idp.getAllUsers();
+	}
+	
 	public void disconnectUser(String username, String hostname) throws ListException
 	{
 		authenticatedUsers.removeSingle(u -> u.getUsername().equals(username));
