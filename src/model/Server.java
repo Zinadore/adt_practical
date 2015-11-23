@@ -1,6 +1,7 @@
 package model;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Random;
 
 import Collections.ArrayBasedList;
@@ -21,6 +22,7 @@ public class Server implements IServer
 	private ListInterface<User> authenticatedUsers; 
 	private ListInterface<INetworkDevice> connectedDevices; //Change it to ListInterface<NetworkDevice> when ready.
 	private StackInterface ipAdresses; //May change it to a queue in the future.
+	private ArrayList<User> user;
 
 	public Server(IIdentityProvider idp)
 	{
@@ -30,6 +32,7 @@ public class Server implements IServer
 		ipAdresses = new StackReferenceBased();
 		fillIps(ipAdresses); 
 		this.idp = idp;
+		user = new ArrayList<User>();
 	}
 
 	public void startServer() throws IOException, ClassNotFoundException //Starts the server.
