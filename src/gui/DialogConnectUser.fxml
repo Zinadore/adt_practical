@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="305.0" prefWidth="395.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="305.0" prefWidth="395.0" styleClass="dialogPane" stylesheets="@newdesign.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <bottom>
       <HBox alignment="CENTER" prefHeight="61.0" prefWidth="395.0" spacing="50.0" BorderPane.alignment="CENTER">
          <children>
@@ -41,14 +41,14 @@
                </padding>
             </Label>
             <Label text="Host Name: " GridPane.rowIndex="2" />
-            <TextField fx:id="usernameField" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="155.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="NEVER" />
+            <TextField fx:id="usernameField" maxHeight="-Infinity" maxWidth="-Infinity" prefWidth="155.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="NEVER" />
+            <PasswordField fx:id="passwordField" maxWidth="-Infinity" prefWidth="155.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
             <TextField fx:id="hostnameField" maxWidth="-Infinity" prefWidth="155.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-            <Label fx:id="errorLabel" text="Error!" textFill="#ff0101" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="3">
+            <Label fx:id="errorLabel" text="Error!" textFill="#c91414" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <font>
                   <Font size="14.0" />
                </font>
             </Label>
-            <PasswordField fx:id="passwordField" maxWidth="-Infinity" prefWidth="155.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
          </children>
       </GridPane>
    </center>

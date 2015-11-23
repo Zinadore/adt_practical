@@ -8,7 +8,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="185.0" prefWidth="373.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="185.0" prefWidth="373.0" styleClass="dialogPane" stylesheets="@newdesign.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1">
    <bottom>
       <HBox alignment="CENTER" prefHeight="52.0" prefWidth="415.0" BorderPane.alignment="CENTER">
          <children>
@@ -51,7 +51,7 @@
                   </VBox>
                </children>
             </HBox>
-            <Label fx:id="errorLabel" text="Error!  " textFill="RED">
+            <Label fx:id="errorLabel" text="Error!  " textFill="#c91414">
                <font>
                   <Font size="14.0" />
                </font>

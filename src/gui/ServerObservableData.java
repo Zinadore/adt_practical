@@ -6,8 +6,10 @@
 package gui;
 
 import Collections.ListInterface;
+import static java.util.Collections.list;
 import utility.BooleanHolder;
 import model.INetworkDevice;
+import model.User;
 
 /**
  *
@@ -16,19 +18,25 @@ import model.INetworkDevice;
 public class ServerObservableData implements IObservableData{
     
     private BooleanHolder serverIsOn;
-    private ListInterface<INetworkDevice> list;
+    private ListInterface<INetworkDevice> connectedList;
+    private ListInterface<User> userList;
     
-    public ServerObservableData(BooleanHolder b, ListInterface<INetworkDevice> l) {
+    public ServerObservableData(BooleanHolder b, 
+            ListInterface<INetworkDevice> l, ListInterface<User> userList) {
         serverIsOn = b;
-        list = l;
+        connectedList = l;
+        this.userList = userList;
     }
 
     public BooleanHolder getServerIsOn() {
         return serverIsOn;
     }
 
-    public ListInterface<INetworkDevice> getList() {
-        return list;
+    public ListInterface<INetworkDevice> getConnectedList() {
+        return connectedList;
     }
     
+    public ListInterface<User> getUserList() {
+        return userList;
+    }
 }

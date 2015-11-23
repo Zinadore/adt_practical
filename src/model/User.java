@@ -6,19 +6,36 @@
 package model;
 
 import java.io.Serializable;
+import java.util.Random;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 
 /**
  *
- * @author arxidios
+ * @author Boutsikas Ioannis, Charalampidis Giorgio
  */
 public class User implements Serializable, Comparable<User>{
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6146694074054550033L;
 	private String username;
     private String password;
+    private String salt;
     
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
+    public User(String username, String password)
+    {
+    	try 
+    	{
+			this.username = username;
+			salt = createSalt();
+			this.password = hash(salt, password);
+		} 
+    	catch (NoSuchAlgorithmException e) 
+    	{
+		}
     }
     
     public String getUsername() {
@@ -26,7 +43,13 @@ public class User implements Serializable, Comparable<User>{
     }
     
     public boolean checkPassword(String password) {
-        return password.equals(this.password);
+    	try 
+    	{
+			String tempHashedPassword = hash(salt, password);
+			return tempHashedPassword.equals(this.password);
+		} catch (NoSuchAlgorithmException e) {
+			return false;
+		}	
     }
 
 	@Override
@@ -64,4 +87,23 @@ public class User implements Serializable, Comparable<User>{
 		return true;
 	}
 
+	private String hash(String salt, String password) throws NoSuchAlgorithmException
+	{
+		password = password + salt;
+		MessageDigest messageDigest = MessageDigest.getInstance("SHA-256");
+		messageDigest.update(password.getBytes());
+		String encryptedString = new String(messageDigest.digest());
+		return encryptedString;
+	}
+
+	private String createSalt()
+	{
+		Random rand = new Random();
+		int value = rand.nextInt(899)+100;
+		return Integer.toString(value);
+	}
+
+	
 }
+
+

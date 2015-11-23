@@ -5,9 +5,11 @@
  */
 package gui;
 
-import EventsListeners.UserNodeEvent;
-import EventsListeners.UserNodeListener;
+import EventsListeners.ConnectEvent;
+import EventsListeners.DialogEvent;
+import EventsListeners.PingEvent;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
@@ -30,7 +32,6 @@ public class CustomUserNode extends StackPane {
     private Button pingBtn;
     private VBox vbox;
     private HBox hbox;
-    private UserNodeListener userNodeListener;
     private String username;
     private String hostname;
     
@@ -61,28 +62,29 @@ public class CustomUserNode extends StackPane {
         getChildren().add(view);
         getChildren().add(vbox);
         
-        setListeners();
+        setButtonActions();
     }
     
-    private void setListeners() {
+    private void setButtonActions() {
         
+        //Fire USER_DISCONNECT event
         disconnectBtn.setOnAction((ActionEvent event) -> {
-            UserNodeEvent newEvent = new UserNodeEvent(username,
-                    hostname ,"Disconnect");
-            userNodeListener.handle(newEvent);
+            ConnectEvent disconnect = new ConnectEvent(ConnectEvent.USER_DISCONNECT, 
+                    username, hostname);
+            Event.fireEvent(disconnectBtn, disconnect);
         });
         
+        //Fire PING event
         pingBtn.setOnAction((ActionEvent event) -> {
-            UserNodeEvent newEvent = new UserNodeEvent(username, "Ping"); 
-            userNodeListener.handle(newEvent);
+            DialogPing dialog = new DialogPing("DialogPing.fxml" ,"Ping Host Name or IP",
+                username);
+            dialog.addDialogListener( (DialogEvent dialogEvent) -> {
+                PingEvent pingEvent = new PingEvent(PingEvent.PING, 
+                    dialogEvent.getUsername(), dialogEvent.getHostOrId(), 
+                    dialogEvent.getIdentifier());
+                Event.fireEvent(pingBtn, pingEvent);
+            });
+            dialog.showAndWait();
        });
-    }
-    
-    public String getUsername() {
-        return usernameLabel.getText();
-    }
-
-    void addUserNodeListener(UserNodeListener l) {
-        userNodeListener = l;
     }
 }

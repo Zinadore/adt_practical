@@ -5,16 +5,11 @@
  */
 package gui;
 
-import Collections.ArrayBasedList;
-import Collections.ListIndexOutOfBoundsException;
 import Collections.ListInterface;
 import utility.BooleanHolder;
 import EventsListeners.DialogEvent;
 import EventsListeners.ConnectEvent;
 import EventsListeners.AddRemoveEvent;
-import EventsListeners.PingEvent;
-import EventsListeners.UserNodeEvent;
-import EventsListeners.UserNodeListener;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.event.Event;
@@ -22,9 +17,14 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.text.Text;
+import javafx.scene.text.TextFlow;
 import model.INetworkDevice;
+import model.User;
 
 /**
  * FXML Controller class
@@ -32,21 +32,24 @@ import model.INetworkDevice;
  * @author harry bournis
  */
 public class NewDesignController extends ControllerAbstract implements
-        Initializable, UserNodeListener {
+        Initializable {
 
     @FXML Button serverBtn;
+    @FXML ImageView ledPosition;
     @FXML Button showComputersBtn;
     @FXML Button connectUserBtn;
     @FXML Button createUserBtn;
     @FXML Button deleteUserBtn;
-    private Button[] buttonArray;
     @FXML Label serverStatusLabel;
-    @FXML TextArea log;
+    @FXML ScrollPane scrollPane;
+    @FXML TextFlow log;
     @FXML private FlowPane userLayout;
     private CustomUserNode node;
+    private Button[] buttonArray;
     
     private ServerObservableData data;
     private ListInterface<INetworkDevice> deviceList;
+    private ListInterface<User> userList;
     private BooleanHolder serverIsOn;
     
     /**
@@ -65,33 +68,19 @@ public class NewDesignController extends ControllerAbstract implements
     @Override
     public void setData() throws UnsupportedOperationException {
         data = (ServerObservableData) observableData;
-        deviceList = data.getList();
+        deviceList = data.getConnectedList();
+        userList = data.getUserList();
         serverIsOn = data.getServerIsOn();
-        update();
     }
     
     public void update() {
-        data = (ServerObservableData) observableData;
-        deviceList = data.getList();
-        serverIsOn = data.getServerIsOn();
         userLayout.getChildren().clear();
         for (int i = 1; i <= deviceList.size(); i++) {
             node = new CustomUserNode(deviceList.get(i));
-            node.addUserNodeListener(this);
             userLayout.getChildren().add(node);
         }
     }
 
-    @Override
-    public void displayMessage(String message) {
-        log.appendText(message + "\n" );
-    }
-    
-    private void disableButtons(boolean b) {
-        for (Button button : buttonArray) {
-            button.setDisable(b);
-        }
-    }
     
     //Button Methods
     public void serverBtnPressed() {
@@ -99,22 +88,30 @@ public class NewDesignController extends ControllerAbstract implements
         if (!serverIsOn.get()) {
             serverBtn.setText("Stop Server");
             serverStatusLabel.setText("Server On");
+            Image icon = new Image("css/green_light.png", 20, 20, true, true);
+            ledPosition.setImage(icon);
+            disableButtons(false);
+            
+            ConnectEvent startEvent = new ConnectEvent(ConnectEvent.START_SERVER);
+            Event.fireEvent(serverBtn, startEvent);
+            
         } else {
             serverBtn.setText("Start Server");
             serverStatusLabel.setText("Server Off");
+            Image icon = new Image("css/red_light.png", 20, 20, true, true);
+            ledPosition.setImage(icon);
             userLayout.getChildren().clear();
+            disableButtons(true);
+            
+            ConnectEvent stopEvent = new ConnectEvent(ConnectEvent.STOP_SERVER);
+            Event.fireEvent(serverBtn, stopEvent);
         }
-        
-        disableButtons(serverIsOn.get());
-        ConnectEvent newEvent = new ConnectEvent(ConnectEvent.SERVER_STATE,
-                !serverIsOn.get());
-        Event.fireEvent(userLayout, newEvent);
     }
     
     
     public void connectUser() {
         
-        DialogConnectUser dialog = new DialogConnectUser();
+        DialogStage dialog = new DialogConnectUser("DialogConnectUser.fxml", "Connect User");
         dialog.addDialogListener((DialogEvent e) -> {
             ConnectEvent newEvent = new ConnectEvent(ConnectEvent.USER_CONNECT, 
                 e.getUsername(), e.getPassword(), 
@@ -125,17 +122,9 @@ public class NewDesignController extends ControllerAbstract implements
     }
     
     
-    public void disconnectUser(UserNodeEvent e) {
+    public void addUser() {
         
-        ConnectEvent newEvent = new ConnectEvent(ConnectEvent.USER_DISCONNECT, 
-                    (String) e.getSource(), e.getHostname());
-        Event.fireEvent(userLayout, newEvent);
-    }
-    
-    
-    public void addNewUser() {
-        
-        DialogAddUser dialog = new DialogAddUser();
+        DialogStage dialog = new DialogAddUser("DialogAddUser.fxml", "Create New User");
         dialog.addDialogListener((DialogEvent e) -> {
             AddRemoveEvent newEvent = new AddRemoveEvent(AddRemoveEvent.ADD_USER,
                     e.getUsername(), e.getPassword());
@@ -147,7 +136,8 @@ public class NewDesignController extends ControllerAbstract implements
     
     public void removeUser() {
         
-        DialogRemoveUser dialog = new DialogRemoveUser(deviceList);
+        DialogStage dialog = new DialogRemoveUser("DialogRemoveUser.fxml", 
+                "Delete User", userList);
         dialog.addDialogListener((DialogEvent e) -> {
             AddRemoveEvent newEvent = new AddRemoveEvent(AddRemoveEvent.REMOVE_USER, 
                     e.getUsername());
@@ -156,35 +146,25 @@ public class NewDesignController extends ControllerAbstract implements
         dialog.showAndWait();
     }
     
-    
-    public void ping(UserNodeEvent userNodeEvent) {
-        
-        DialogPing dialog = new DialogPing((String) userNodeEvent.getSource());
-        dialog.addDialogListener( (DialogEvent dialogEvent) -> {
-            PingEvent pingEvent = new PingEvent(PingEvent.PING, 
-                    dialogEvent.getUsername(), dialogEvent.getHostOrId(), 
-                    dialogEvent.getIdentifier());
-            Event.fireEvent(userLayout, pingEvent);
-        });
-        dialog.showAndWait();
-    }
-    
-    
     public void showConnectedComputers() {
         
-        DialogShowComputers dialog = new DialogShowComputers(deviceList);
+        DialogStage dialog = new DialogShowComputers("DialogShowComputers.fxml", 
+                "Connected Computers", deviceList);
         dialog.showAndWait();
     }
     
     
     @Override
-    public void handle(UserNodeEvent e) {
-        
-        if (e.getAction().equals("Disconnect")) {
-            disconnectUser(e);
-        } 
-        else if (e.getAction().equals("Ping")) {
-            ping(e);
+    public void displayMessage(String message, MessageType type) {
+        Text text = new Text(message + "\n\n");
+        text.setFill(type.value());
+        log.getChildren().add(text);
+        scrollPane.setVvalue(1.0);
+    }
+    
+    private void disableButtons(boolean b) {
+        for (Button button : buttonArray) {
+            button.setDisable(b);
         }
     }
 }

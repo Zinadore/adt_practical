@@ -3,7 +3,6 @@ package Collections;
 import java.util.Comparator;
 import java.util.function.Predicate;
 
-@SuppressWarnings("unchecked")
 public class ReferenceBasedList<T> implements ListInterface<T>
 {
 	/**
@@ -181,14 +180,19 @@ public class ReferenceBasedList<T> implements ListInterface<T>
 	}
 
 	public boolean exists(Predicate<T> predicate) {
-		for (ListNode<T> tmp=head; tmp!=null; tmp=tmp.getNext())
-			if (predicate.test(tmp.getItem()))
-				return true;
+		if(!isEmpty()) {
+			for (ListNode<T> tmp=head; tmp!=null; tmp=tmp.getNext())
+				if (predicate.test(tmp.getItem()))
+					return true;
+		}
 		return false;
 	}
 
 	@Override
 	public T findSingle(Predicate<T> predicate) throws ListException {
+		if(isEmpty()) {
+			throw new ListException("Error on find single, list is empty");
+		}
 		for (ListNode<T> tmp=head; tmp!=null; tmp=tmp.getNext()) {
 			T item = tmp.getItem();
 			if (predicate.test(item)) {

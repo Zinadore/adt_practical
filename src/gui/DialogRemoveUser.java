@@ -8,7 +8,6 @@ package gui;
 import Collections.ListInterface;
 import EventsListeners.DialogEvent;
 import EventsListeners.DialogListener;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
@@ -16,21 +15,18 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
-import model.INetworkDevice;
+import model.User;
 
 /**
  * FXML Controller class
  *
  * @author harry bournis
  */
-public class DialogRemoveUser extends Stage implements Initializable {
+public class DialogRemoveUser extends DialogStage implements Initializable {
 
     @FXML private TextField usernameField;
     @FXML private ListView<String> listview;
@@ -48,47 +44,24 @@ public class DialogRemoveUser extends Stage implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }    
     
-    public DialogRemoveUser(ListInterface<INetworkDevice> data) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DialogRemoveUser.fxml"));
-        fxmlLoader.setController(this);
-        
-        try
-        {
-            setScene(new Scene((Parent) fxmlLoader.load()));
-            setTitle("Delete User");
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        
+    public DialogRemoveUser(String fxmlFile, String title, ListInterface<User> data) {
+        super(fxmlFile, title);
         for (int i = 1; i <= data.size(); i++) {
-            observable.add(data.get(i).getUserName());
+            observable.add(data.get(i).getUsername());
         }
         listview.getItems().setAll(observable);
         listview.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
     }
     
+    @Override
     public void okPressed() {
         if (listview.getSelectionModel().getSelectedItem() != null) {
             
             DialogEvent event = new DialogEvent(this, 
                     listview.getSelectionModel().getSelectedItem());
-            listener.handle(event);
+            getListener().handle(event);
             close();
         }
-        else {
-            System.out.println("select something");
-        }
     }
-    
-    public void cancelPressed() {
-        close();
-    }
-
-    void addDialogListener(DialogListener dialogListener) {
-        listener = dialogListener;
-    }
-    
 }
 

@@ -17,11 +17,17 @@ public class ConnectEvent extends Event {
     public static final EventType<ConnectEvent> SERVER_STATE = new EventType<>(Event.ANY, "SERVER_STATE");
     public static final EventType<ConnectEvent> USER_CONNECT = new EventType<>(Event.ANY, "USER_CONNECT");
     public static final EventType<ConnectEvent> USER_DISCONNECT = new EventType<>(Event.ANY, "USER_DISCONNECT");
+    public static final EventType<ConnectEvent> START_SERVER = new EventType<>(Event.ANY, "START_SERVER");
+    public static final EventType<ConnectEvent> STOP_SERVER = new EventType<>(Event.ANY, "STOP_SERVER");
     
     private boolean serverIsOn;
     private String username;
     private String password;
     private String hostname;
+    
+    public ConnectEvent(EventType<? extends Event> eventType) {
+        super(eventType);
+    }
     
     //Constructor for Server State EventType
     public ConnectEvent(EventType<? extends Event> eventType, boolean serverIsOn) {

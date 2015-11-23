@@ -7,26 +7,22 @@ package gui;
 
 import EventsListeners.DialogEvent;
 import EventsListeners.DialogListener;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.stage.Stage;
 
 /**
  * FXML Controller class
  *
  * @author harry bournis
  */
-public class DialogConnectUser extends Stage implements Initializable {
+public class DialogConnectUser extends DialogStage implements Initializable {
 
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
@@ -45,20 +41,8 @@ public class DialogConnectUser extends Stage implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }    
     
-    public DialogConnectUser() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DialogConnectUser.fxml"));
-        fxmlLoader.setController(this);
-
-        try
-        {
-            setScene(new Scene((Parent) fxmlLoader.load()));
-            setTitle("Connect User");
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        
+    public DialogConnectUser(String fxmlFile, String title) {
+        super(fxmlFile, title);
         errorLabel.setVisible(false);
         usernameField.requestFocus();
     }
@@ -70,20 +54,12 @@ public class DialogConnectUser extends Stage implements Initializable {
             
             DialogEvent event = new DialogEvent(this, usernameField.getText(), 
                     passwordField.getText(), hostnameField.getText());
-            listener.handle(event);
+            getListener().handle(event);
             close();
         }
         else {
             showError("Fields should not be empty.");
         }
-    }
-    
-    public void cancelPressed() {
-        close();
-    }
-
-    public void addDialogListener(DialogListener dialogListener) {
-        listener = dialogListener;
     }
     
     private void showError(String message) {

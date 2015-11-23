@@ -85,15 +85,15 @@ public class Server implements IServer
 	public void connectUser(String username, String password, String hostname) throws IdentityException, ServerException
 	{
 		if(authenticatedUsers.size() >= maxSize) {
-			throw new ServerException("There are already" + maxSize + " users connected");
+			throw new ServerException("Server is already at full capacity. (" + maxSize + ")");
 		}
 		if(isAlreadyAuthenticated(username)) {
 			throw new ServerException("User is already connected");
 		}
 		if (!hostnameExists(hostname))
 		{
-			INetworkDevice dev = new Laptop(hostname, giveIp());
 			User user = idp.authenticate(username, password);
+			INetworkDevice dev = new Laptop(hostname, giveIp());
 			dev.changeUser(user);
 			connectedDevices.append(dev);
 			authenticatedUsers.append(user);

@@ -7,21 +7,16 @@ package gui;
 
 import Collections.ListInterface;
 import EventsListeners.DialogListener;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.stage.Stage;
 import model.INetworkDevice;
 
 /**
@@ -29,7 +24,7 @@ import model.INetworkDevice;
  *
  * @author arxidios
  */
-public class DialogShowComputers extends Stage implements Initializable {
+public class DialogShowComputers extends DialogStage implements Initializable {
 
     @FXML Button closeBtn;
     @FXML TableView<INetworkDevice> tableView;
@@ -47,21 +42,8 @@ public class DialogShowComputers extends Stage implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }    
     
-    public DialogShowComputers(ListInterface<INetworkDevice> list) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass()
-                .getResource("DialogShowComputers.fxml"));
-        fxmlLoader.setController(this);
-
-        try
-        {
-            setScene(new Scene((Parent) fxmlLoader.load()));
-            setTitle("Connected Computers");
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        
+    public DialogShowComputers(String fxmlFile, String title, ListInterface<INetworkDevice> list) {
+        super(fxmlFile, title);
         for (int i = 1; i <= list.size(); i++) {
             observableList.add(list.get(i));
         }
@@ -74,13 +56,5 @@ public class DialogShowComputers extends Stage implements Initializable {
                 PropertyValueFactory<INetworkDevice, String>("userName") );
         
         tableView.setItems(observableList);
-    }
-    
-    public void closeBtnPressed() {
-        close();
-    }
-
-    public void addDialogListener(DialogListener dialogListener) {
-        listener = dialogListener;
     }
 }

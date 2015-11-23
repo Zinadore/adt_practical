@@ -25,6 +25,10 @@ public abstract class ControllerAbstract {
         System.out.println(message);
     }
     
+    public void displayMessage(String message, MessageType type) {
+        System.out.println(message);
+    }
+    
     public void addButtonPressedListener(ButtonPressedListener listener) {
         buttonPressedListener = listener;
     }

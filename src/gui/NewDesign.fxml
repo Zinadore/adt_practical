@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
 <?import javafx.geometry.*?>
 <?import java.lang.*?>
 <?import java.net.*?>
@@ -8,19 +11,38 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<BorderPane prefHeight="692.0" prefWidth="875.0" stylesheets="@newdesign.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.NewDesignController">
+<BorderPane id="mainPane" prefHeight="692.0" prefWidth="875.0" stylesheets="@newdesign.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="gui.NewDesignController">
    <right>
-      <VBox alignment="CENTER" prefHeight="400.0" prefWidth="222.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+      <VBox id="sidePanel" alignment="CENTER" prefHeight="400.0" prefWidth="222.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
          <children>
-            <Label fx:id="serverStatusLabel" prefHeight="16.0" text="Server Off" VBox.vgrow="ALWAYS" />
+            <HBox alignment="CENTER">
+               <children>
+                  <ImageView fx:id="ledPosition" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true" HBox.hgrow="NEVER">
+                     <HBox.margin>
+                        <Insets right="10.0" />
+                     </HBox.margin>
+                     <image>
+                        <Image url="@../css/red_light.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="serverStatusLabel" prefHeight="16.0" text="Server Off" VBox.vgrow="ALWAYS">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+               <VBox.margin>
+                  <Insets top="5.0" />
+               </VBox.margin>
+            </HBox>
             <Region VBox.vgrow="SOMETIMES" />
             <Label alignment="CENTER" prefHeight="16.0" prefWidth="110.0" text="Menu" />
-            <ToolBar orientation="VERTICAL" prefWidth="222.0" VBox.vgrow="NEVER">
+            <ToolBar id="toolbar" orientation="VERTICAL" prefWidth="222.0" VBox.vgrow="NEVER">
               <items>
                 <Button fx:id="serverBtn" alignment="CENTER" mnemonicParsing="false" onAction="#serverBtnPressed" prefHeight="26.0" prefWidth="220.0" text="Start Server" />
                   <Button fx:id="showComputersBtn" mnemonicParsing="false" onAction="#showConnectedComputers" prefWidth="220.0" text="Show Connected Computers..." />
                   <Button fx:id="connectUserBtn" alignment="CENTER" mnemonicParsing="false" onAction="#connectUser" prefWidth="220.0" text="Connect User..." />
-                  <Button fx:id="createUserBtn" alignment="CENTER" mnemonicParsing="false" onAction="#addNewUser" prefWidth="220.0" text="Create New User..." />
+                  <Button fx:id="createUserBtn" alignment="CENTER" mnemonicParsing="false" onAction="#addUser" prefWidth="220.0" text="Create New User..." />
                   <Button fx:id="deleteUserBtn" alignment="CENTER" mnemonicParsing="false" onAction="#removeUser" prefWidth="220.0" text="Delete User..." />
               </items>
             </ToolBar>
@@ -30,9 +52,9 @@
                   <Label text="Log:" />
                </children>
             </HBox>
-            <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" prefViewportHeight="200.0" prefViewportWidth="127.0" prefWidth="222.0" vbarPolicy="ALWAYS" VBox.vgrow="SOMETIMES">
+            <ScrollPane fx:id="scrollPane" fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" pannable="true" prefViewportHeight="200.0" prefViewportWidth="127.0" prefWidth="222.0" VBox.vgrow="SOMETIMES">
                <content>
-                  <TextArea id="log" fx:id="log" disable="true" editable="false" prefWidth="222.0" />
+                  <TextFlow fx:id="log" prefHeight="200.0" prefWidth="200.0" />
                </content>
             </ScrollPane>
          </children>

@@ -7,20 +7,16 @@ package gui;
 
 import EventsListeners.DialogEvent;
 import EventsListeners.DialogListener;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
 import utility.PasswordChecker;
 
 /**
@@ -28,7 +24,7 @@ import utility.PasswordChecker;
  *
  * @author harry bournis
  */
-public class DialogAddUser extends Stage implements Initializable {
+public class DialogAddUser extends DialogStage implements Initializable {
 
     @FXML private TextField usernameField;
     @FXML private PasswordField passwordField;
@@ -46,45 +42,26 @@ public class DialogAddUser extends Stage implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
     }    
     
-    public DialogAddUser() {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DialogAddUser.fxml"));
-        fxmlLoader.setController(this);
-
-        try
-        {
-            setScene(new Scene((Parent) fxmlLoader.load()));
-            setTitle("Create New User");
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        
+    public DialogAddUser(String fxmlFile, String title) {
+        super(fxmlFile, title);
         errorLabel.setVisible(false);
         usernameField.requestFocus();
     }
     
+    @Override
     public void okPressed() {
         if (usernameField.getText().length() > 1 
                 && passwordField.getText().length() > 1) {
             
             DialogEvent event = new DialogEvent(this, usernameField.getText(), 
                     passwordField.getText());
-            listener.handle(event);
+            getListener().handle(event);
             close();
         }
         else {
             showError("Fields can not be less than one character.");
-            errorLabel.setTextFill(Color.RED);
+            errorLabel.setTextFill(Color.web("#c91414"));
         }
-    }
-    
-    public void cancelPressed() {
-        close();
-    }
-
-    void addDialogListener(DialogListener dialogListener) {
-        listener = dialogListener;
     }
     
     private void showError(String message) {

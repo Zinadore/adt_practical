@@ -7,19 +7,14 @@ package gui;
 
 import EventsListeners.DialogEvent;
 import EventsListeners.DialogListener;
-import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.stage.Stage;
 import model.PingType;
 
 /**
@@ -27,7 +22,7 @@ import model.PingType;
  *
  * @author arxidios
  */
-public class DialogPing extends Stage implements Initializable {
+public class DialogPing extends DialogStage implements Initializable {
 
     @FXML ToggleGroup toggleGroup;
     @FXML RadioButton HOSTNAME;
@@ -47,20 +42,8 @@ public class DialogPing extends Stage implements Initializable {
         // TODO
     }    
     
-    public DialogPing(String username) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("DialogPing.fxml"));
-        fxmlLoader.setController(this);
-
-        try
-        {
-            setScene(new Scene((Parent) fxmlLoader.load()));
-            setTitle("Ping Host Name or IP");
-        }
-        catch (IOException e)
-        {
-            e.printStackTrace();
-        }
-        
+    public DialogPing(String fxmlFile, String title, String username) {
+        super(fxmlFile, title);
         this.username = username;
         userLabel.setText("User " + username + " will Ping: ");
         errorLabel.setVisible(false);
@@ -71,6 +54,7 @@ public class DialogPing extends Stage implements Initializable {
         textField.requestFocus();
     }
     
+    @Override
     public void okPressed() {
         
         if (textField.getText().length() > 1) {
@@ -79,7 +63,8 @@ public class DialogPing extends Stage implements Initializable {
                 RadioButton button = (RadioButton) toggleGroup.getSelectedToggle();
                 DialogEvent newEvent = new DialogEvent(button, username, 
                         textField.getText(), PingType.valueOf(button.getId()));
-                listener.handle(newEvent);
+                getListener().handle(newEvent);
+                close();
             } 
             else {
                 showError("Host Name or IP must be selected.");
@@ -90,13 +75,6 @@ public class DialogPing extends Stage implements Initializable {
         }
     }
     
-    public void cancelPressed() {
-        close();
-    }
-    
-    public void addDialogListener(DialogListener dialogListener) {
-        listener = dialogListener;
-    }
     
     private void showError(String message) {
         errorLabel.setText("Error! " + message);
