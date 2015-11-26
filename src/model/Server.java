@@ -1,7 +1,6 @@
 package model;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Random;
 
 import Collections.ArrayBasedList;
@@ -11,47 +10,49 @@ import Collections.StackInterface;
 import Collections.StackReferenceBased;
 import utility.BooleanHolder;
 
-
+/**
+ * 
+ * @author Charalampidis Giorgio
+ *
+ */
 public class Server implements IServer
 					
 {
         
 	private int maxSize = 5; //Change to select the amount of users the network will support.
-	private BooleanHolder state; //Server: On or Off. Change it to BooleanHolder when ready.
+	private BooleanHolder state; 
 	private IIdentityProvider idp;
 	private ListInterface<User> authenticatedUsers; 
-	private ListInterface<INetworkDevice> connectedDevices; //Change it to ListInterface<NetworkDevice> when ready.
-	private StackInterface ipAdresses; //May change it to a queue in the future.
-	private ArrayList<User> user;
+	private ListInterface<INetworkDevice> connectedDevices; 
+	private StackInterface ipAddresses; 
 
 	public Server(IIdentityProvider idp)
 	{
 		state = new BooleanHolder(false);
 		authenticatedUsers = new ArrayBasedList<User>(); 
 		connectedDevices = new ArrayBasedList<INetworkDevice>(); 
-		ipAdresses = new StackReferenceBased();
-		fillIps(ipAdresses); 
+		ipAddresses = new StackReferenceBased();
+		fillIps(ipAddresses); 
 		this.idp = idp;
-		user = new ArrayList<User>();
 	}
-
-	public void startServer() throws IOException, ClassNotFoundException //Starts the server.
+	
+	public void startServer() throws IOException, ClassNotFoundException 
 	{
 		state.set(true);
 		idp.loadUsers();
 		authenticatedUsers = new ArrayBasedList<User>(); 
 		connectedDevices = new ArrayBasedList<INetworkDevice>(); 
-		ipAdresses = new StackReferenceBased();
-		fillIps(ipAdresses);
+		ipAddresses = new StackReferenceBased();
+		fillIps(ipAddresses);
 	}
 	
 
-	public void stopServer() throws IOException //Stops the server.
+	public void stopServer() throws IOException 
 	{
 		idp.saveUsers();
 		authenticatedUsers = null;
 		connectedDevices = null;
-		ipAdresses = null;
+		ipAddresses = null;
 		state.set(false);
 	}
 
@@ -69,17 +70,29 @@ public class Server implements IServer
 		}
 		idp.remove(username);
 	}
-
+	/**
+	 * Returns whether a specific user is currently connected to the network.
+	 * @param username Username of the user.
+	 * @return boolean true if the user is connected, false if is not connected.
+	 */
 	private boolean isAlreadyAuthenticated(String username)
 	{
 		return authenticatedUsers.exists(u -> u.getUsername().equals(username));
 	}
-
+	/**
+	 * Returns whether a device with a specific hostname is currently connected to the network.
+	 * @param hostname Hostname of the device.
+	 * @return boolean true if a device with a specific hostname is currently connected, false if it is not.
+	 */
 	private boolean hostnameExists(String hostname)
 	{
 		return connectedDevices.exists(l -> l.getHostname().equals(hostname));
 	}
-
+	/**
+	 * Returns whether a device with a specific IP address is currently connected to the network.
+	 * @param ip IP address of the device.
+	 * @return boolean true if a device with a specific IP address is currently connected, false if it is not.
+	 */
 	private boolean ipExists(String ip)
 	{
 		return connectedDevices.exists(l -> l.getIp().equals(ip));
@@ -117,8 +130,8 @@ public class Server implements IServer
 				return ipExists(pingInfo);
 			case HOSTNAME:
 				return hostnameExists(pingInfo);
-			default: //can i not use default on switch?
-                                return false;
+			default:
+                return false;
 		}
 	}
 
@@ -135,7 +148,7 @@ public class Server implements IServer
 	{
 		authenticatedUsers.removeSingle(u -> u.getUsername().equals(username));
 		INetworkDevice dev = connectedDevices.findSingle(l -> l.getHostname().equals(hostname));
-		ipAdresses.push(dev.getIp());
+		ipAddresses.push(dev.getIp());
 		connectedDevices.removeSingle(l -> l.getHostname().equals(hostname));
 	}
 
@@ -145,12 +158,14 @@ public class Server implements IServer
 	}
 
 	private String giveIp()
-	// Laptop asks for an IP. ipAdresses stack pops an available IP and returns it.
 	{
-		return (String)ipAdresses.pop();
+		return (String)ipAddresses.pop();
 	}
-
-	private void fillIps(StackInterface ipAdresses)
+	/**
+	 * Fills a Stack Interface with randomly generated IP addresses.
+	 * @param ipAddresses Stack Interface that will be filled.
+	 */
+	private void fillIps(StackInterface ipAddresses)
 	{
 		Random rand = new Random();
 		int value;
@@ -160,9 +175,9 @@ public class Server implements IServer
 		{
 			value = rand.nextInt(100)+100;
 			randIp = "192.168.10." + Integer.toString(value);
-			ipAdresses.push(randIp);
+			ipAddresses.push(randIp);
 		}
-		this.ipAdresses = ipAdresses;
+		this.ipAddresses = ipAddresses;
 	}
 	
 	public String toString()

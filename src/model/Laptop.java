@@ -6,8 +6,8 @@
 package model;
 
 /**
- *
- * @author arxidios
+ * This class represents a Laptop to the network. It can have a user connected on it.
+ * @author Ioannis Boutsikas
  */
 public class Laptop implements INetworkDevice {
     
